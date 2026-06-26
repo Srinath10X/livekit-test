@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
+@theme {
+  /* terminal · near-black graphite + lime — "infrastructure you own" */
+  --color-bg: oklch(0.165 0.006 155);
+  --color-surface: oklch(0.214 0.008 155);
+  --color-surface-2: oklch(0.262 0.009 155);
+  --color-panel: oklch(0.186 0.007 155);
+  --color-line: oklch(0.30 0.009 155);
+  --color-line-bright: oklch(0.42 0.012 155);
+  --color-ink: oklch(0.965 0.004 155);
+  --color-muted: oklch(0.752 0.012 155); /* ≥7:1 on bg */
+  --color-faint: oklch(0.612 0.013 155); /* ≥4.5:1 — placeholders/readouts */
+
+  --color-accent: oklch(0.88 0.2 128); /* lime — state + emphasis */
+  --color-accent-bright: oklch(0.93 0.2 128);
+  --color-accent-solid: oklch(0.862 0.205 128);
+  --color-accent-solid-hover: oklch(0.808 0.2 128);
+  --color-on-accent: oklch(0.18 0.02 155); /* near-black ink on lime */
+  --color-danger: oklch(0.665 0.19 25);
+
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SF Mono", monospace;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+
+  --animate-fade-up: fade-up 0.5s var(--ease-out-quart) both;
+  --animate-fade-in: fade-in 0.18s var(--ease-out-quart) both;
+  --animate-sheet-up: sheet-up 0.34s var(--ease-out-quart) both;
+  --animate-pulse-ring: pulse-ring 2.2s var(--ease-out-quart) infinite;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-bg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(174, 240, 58, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(174, 240, 58, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(174, 240, 58, 0);
+  }
+}
+
+/* ---------- LiveKit in-call stage theming (terminal dark) ---------- */
+[data-lk-theme="default"] {
+  --lk-bg: oklch(0.165 0.006 155);
+  --lk-bg2: oklch(0.214 0.008 155);
+  --lk-bg3: oklch(0.262 0.009 155);
+  --lk-fg: oklch(0.965 0.004 155);
+  --lk-fg2: oklch(0.752 0.012 155);
+  --lk-fg3: oklch(0.612 0.013 155);
+  --lk-accent-bg: oklch(0.862 0.205 128);
+  --lk-accent-fg: oklch(0.18 0.02 155);
+  --lk-accent2: oklch(0.808 0.2 128);
+  --lk-border-color: oklch(0.3 0.009 155);
+  --lk-danger: oklch(0.665 0.19 25);
+  --lk-grid-gap: 0.625rem;
+  --lk-border-radius: 0.75rem;
+}
+
+.lk-participant-tile {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: oklch(0.13 0.005 155);
+  border: 1px solid var(--color-line) !important;
+  box-shadow: none !important;
+}
+/* single speaking ring: LiveKit draws it on ::after via --lk-accent-bg (lime).
+   clear our own border so the two don't stack into a double ring. */
+.lk-participant-tile[data-lk-speaking="true"] {
+  border-color: transparent !important;
+}
+.lk-participant-placeholder {
+  background: radial-gradient(
+    120% 120% at 50% 38%,
+    oklch(0.22 0.006 155) 0%,
+    oklch(0.13 0.005 155) 100%
+  );
+  color: oklch(0.42 0.008 155);
+}
+.lk-participant-name {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.lk-participant-metadata-item {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* pin/focus toggle on each tile */
+.lk-focus-toggle-button {
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--color-ink);
+  border-radius: 0.5rem;
+}
+.lk-focus-toggle-button:hover {
+  background: var(--color-accent-solid);
+  color: var(--color-on-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
